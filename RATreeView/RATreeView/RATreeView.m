@@ -199,7 +199,7 @@
 - (BOOL)cellLayoutMarginsFollowReadableWidth
 {
   if ([self.tableView respondsToSelector:@selector(cellLayoutMarginsFollowReadableWidth)]) {
-    return self.tableView.cellLayoutMarginsFollowReadableWidth;
+    return [self.tableView performSelector:@selector(cellLayoutMarginsFollowReadableWidth)];
   } else {
     return NO;
   }
@@ -207,9 +207,17 @@
 
 - (void)setCellLayoutMarginsFollowReadableWidth:(BOOL)cellLayoutMarginsFollowReadableWidth
 {
-  if ([self.tableView respondsToSelector:@selector(cellLayoutMarginsFollowReadableWidth)]) {
-    self.tableView.cellLayoutMarginsFollowReadableWidth = cellLayoutMarginsFollowReadableWidth;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  if ([self.tableView respondsToSelector:@selector(setCellLayoutMarginsFollowReadableWidth)]) {
+
+      NSMethodSignature *signature = [[self.tableView class] methodSignatureForSelector:@selector(setCellLayoutMarginsFollowReadableWidth)];
+      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+      [invocation setSelector:@selector(setCellLayoutMarginsFollowReadableWidth)];
+      [invocation setArgument:&cellLayoutMarginsFollowReadableWidth atIndex:2];
+      [invocation invokeWithTarget:self.tableView];
   }
+#pragma clang diagnostic pop
 }
 
 - (UIView *)backgroundView
